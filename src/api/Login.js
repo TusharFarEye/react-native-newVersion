@@ -1,0 +1,24 @@
+const postUserLogin = async (userData) => {
+  // const csrfToken = document.cookie.replace(/(?:(?:^|.*;\s*)XSRF-TOKEN\s*\=\s*([^;]*).*$)|^.*$/, '$1');
+    try {
+        let response = await fetch(
+        `http://10.0.2.2:8080/login?username=${userData.username}&password=${userData.password}` ,
+        // {headers: { 'X-XSRF-TOKEN': csrfToken },},
+        {
+            method: 'POST',
+            headers: {
+              Accept: 'application/json',
+              'Content-Type': 'application/json'
+            },
+            // body: JSON.stringify({
+            //   username: userData.username,
+            //   password: userData.password,
+            // })
+          });
+          return response;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+export {postUserLogin};
