@@ -40,6 +40,9 @@
              <Stack.Screen 
              name="AddTodo"  
              component={AddTodo} 
+             options={{
+              headerShown:false
+            }}
              />
              <Stack.Screen 
              name="SignUp"  

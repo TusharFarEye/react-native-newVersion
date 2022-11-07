@@ -119,6 +119,10 @@ export default function AddTodo({navigation}) {
             <Text style = {{color:"white"}}>Submit</Text>
         </TouchableOpacity>
 
+        <TouchableOpacity style ={styles.loginButton} onPress= {() => navigation.navigate("TodoPage")}>
+            <Text style = {{color:"white"}}>Cancel</Text>
+        </TouchableOpacity>
+
     </View>
   )
 }

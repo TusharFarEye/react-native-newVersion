@@ -19,7 +19,7 @@ export default function TodoInfo(props) {
       </View>
       <View style = {{flex:4, justifyContent:"center", padding:10}}>
         <Text>
-             {props.TodoData.title} |  {props.TodoData.date} 
+             {props.TodoData.title}
         </Text>
       </View>
     </View>
