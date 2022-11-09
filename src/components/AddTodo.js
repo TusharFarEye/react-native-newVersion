@@ -10,10 +10,13 @@ import {
     View,
     TouchableOpacity,
     Switch,
+    Button,
+    SafeAreaView,
   } from 'react-native';
  
 import { styles } from '../css/styles';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import DatePicker from 'react-native-date-picker'
 import TodoSchema from '../schema/TodoSchema';
 
 storeDataInAsync = async(obj) => { 
@@ -37,7 +40,7 @@ export default function AddTodo({navigation}) {
     const [title , setTitle] = useState("");
     const [date , setDate] = useState("");
     const [todoStatus, setTodoStatus] = useState("");
-    const [showPicker, setShowPicker] = useState(false);
+    const [open, setOpen] = useState(false);
     const [todoType, setTodoType] = useState(true);
 
     const addToStorage = async() => {
@@ -78,6 +81,16 @@ export default function AddTodo({navigation}) {
     
 
   return (
+    <SafeAreaView style={[styles.TodoContainer, {
+        flexDirection: "column"
+        }]}>
+  
+      <StatusBar style = "auto"/>
+          <View style = {{ flex: 1, alignItems :'center' , justifyContent : 'center'}} >
+          <Text style = {styles.sectionTitle}>Add Todo Items</Text> 
+          
+          </View>
+    
     <View style = {styles.AddTodo}>
 
         <TextInput 
@@ -94,19 +107,31 @@ export default function AddTodo({navigation}) {
         onChangeText = {setTodoStatus}>
         </TextInput>
 
-        <TouchableOpacity style ={styles.loginButton} onPress= {() => setShowPicker(true)}>
-            <Text style = {{color:"white"}}>Select Date</Text>
-        </TouchableOpacity>
-
-        {showPicker && <DateTimePicker
+        {/* {showPicker && <DateTimePicker
             testID="dateTimePicker"
             value={new Date()}
             is24Hour={true}
             dateFormat="yyyy-mm-dd"
         //   minimumDate={new Date()}
           onChange = { (event, selectedDate) => {setDate(selectedDate.toLocaleString()); setShowPicker(false);}}
-        />}
-         <Text>Selected Date: {date.toLocaleString()}</Text> 
+        />} */}
+
+        <Button title="Open Date Time Picker" onPress={() => setOpen(true)} />
+            <DatePicker
+                modal
+                open={open}
+                date={new Date()}
+                minimumDate={new Date()}
+                onConfirm={(date) => {
+                setOpen(false)
+                setDate(date.toLocaleString());
+                }}
+                onCancel={() => {
+                setOpen(false)
+                }}
+            />
+
+         <Text>Selected Date: {date}</Text> 
             
         <View style = {{flexDirection:"row",marginTop:20}}>
                 <Text>Personal</Text>
@@ -123,5 +148,6 @@ export default function AddTodo({navigation}) {
         </TouchableOpacity>
 
     </View>
+    </SafeAreaView>
   )
 }

@@ -13,7 +13,7 @@ export const styles = StyleSheet.create({
      },
      TodoContainer: {
         flex: 1,
-        backgroundColor: "#000080",
+        backgroundColor: "#000080", 
       },
      TextInput: {
       borderBottomWidth : 1,
@@ -29,7 +29,8 @@ export const styles = StyleSheet.create({
        fontSize: 24,
        fontWeight: '600',
        justifyContent:'center',
-       color:'white'
+       color:'white',
+       marginBottom:50
      },
      signUpRedirect: {
        height: 30,
@@ -67,9 +68,10 @@ export const styles = StyleSheet.create({
         marginTop:10,
         shadowColor: '#000000',
         padding:10,
-        justifyContent:"center",
+        justifyContent:"space-evenly",
         alignContent:"center",
         borderRadius:15,
+        borderWidth:1
     },
     AddUserButton:{
         flexDirection: "row",
@@ -84,6 +86,13 @@ export const styles = StyleSheet.create({
     AddTodo:{
       justifyContent:"center",
       alignItems:"center",
-      backgroundColor:"grey",
+      backgroundColor:"white",
+      flex: 4, 
+      borderTopLeftRadius : 25, 
+      borderTopRightRadius : 25,
+    },
+    LogoutButton:{
+        marginBottom:30,
+        marginLeft:350
     }
    });

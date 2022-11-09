@@ -10,7 +10,9 @@ import {
     View,
     TouchableOpacity,
     ScrollView,
-    Image
+    Image,
+    SafeAreaView,
+    FlatList
 } from 'react-native';
 
 import TodoInfo from './TodoInfo';
@@ -18,6 +20,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { styles } from '../css/styles';
 import { getUserDetails } from '../api/User';
 import TodoSchema from '../schema/TodoSchema';
+import UserDetailsSchema from '../schema/UserDetailsSchema';
 
 const getUserFirstName = async() => {
   let response = await getUserDetails();
@@ -29,6 +32,7 @@ export default function TodoPage({navigation}) {
     const [TodoList ,setTodoList] = useState([]);
     const [userName, setUserName] = useState("");
     const [isSelected, setIsSelected] = useState("ToDo");
+    const [statusChange, onStatusChange] = useState(false);
 
    useEffect( () => {
     async function fetchTodoData(){
@@ -68,15 +72,44 @@ export default function TodoPage({navigation}) {
     fetchData();
    }, [])
    
+   userLogout = async() => {
+    const realm1 = await Realm.open({
+      path: "myrealm1",
+      schema: [UserDetailsSchema],
+    });
+
+    realm1.write(() => {
+      realm1.deleteAll();
+      });
+
+    navigation.navigate("Login");
+   }
+
+   const renderItem = ( data ) => {
+              const field = data.item;
+              if(isSelected=="ToDo")
+              return <TodoInfo TodoData = {field} statusChange = {statusChange} onStatusChange = {onStatusChange}></TodoInfo>
+              if(isSelected=="Pending" && field.todoStatus=="pending")
+              return <TodoInfo TodoData = {field} statusChange = {statusChange} onStatusChange = {onStatusChange}></TodoInfo>
+              if(isSelected=="Done" && field.todoStatus=="done")
+              return <TodoInfo TodoData = {field} statusChange = {statusChange} onStatusChange = {onStatusChange}></TodoInfo>
+    };
+
   return (
 
-    <View style={[styles.TodoContainer, {
+    <SafeAreaView style={[styles.TodoContainer, {
       flexDirection: "column"
       }]}>
 
     <StatusBar style = "auto"/>
-        <View style = {{ flex: 1, alignItems :'center' ,justifyContent : 'center'}} >
-        <Text style = {styles.sectionTitle}>Hello {userName}</Text>
+        <View style = {{ flex: 1, alignItems :'center' , justifyContent : 'center'}} >
+
+        <TouchableOpacity style = {styles.LogoutButton} onPress = {()=>userLogout()}>
+        <Image style = {{width :30, height:30, resizeMode: 'contain'}} source={require('/home/tushar/Desktop/TodoApp/src/static/icons8-logout-64.png')} />
+        </TouchableOpacity>
+
+        <Text style = {styles.sectionTitle}>Hello {userName}</Text> 
+        
         </View>
         <View style = {{ 
             flex: 4, 
@@ -89,22 +122,18 @@ export default function TodoPage({navigation}) {
 
             <View elevation = {5} style={styles.TodoNav}>
                 <Text style={{color:(isSelected=="ToDo"?"#000080":"black")}} onPress = {()=>setIsSelected("ToDo")} >ToDo</Text> 
-                <Text style={{color:(isSelected=="Doing"?"#000080":"black")}} onPress = {()=>setIsSelected("Doing")}>Doing</Text> 
+                <Text style={{color:(isSelected=="Doing"?"#000080":"black")}} onPress = {()=>setIsSelected("Pending")}>Pending</Text> 
                 <Text style={{color:(isSelected=="Done"?"#000080":"black")}} onPress = {()=>setIsSelected("Done")}>Done</Text>
             </View>
 
-            <ScrollView style= {{alignContent:'center', width:"80%", padding:10}}>
-                {TodoList.map((field) => {
-                    if(isSelected=="ToDo")
-                    return <TodoInfo TodoData = {field}></TodoInfo>
-                    if(isSelected=="Doing" && field.date>=currDate)
-                    return <TodoInfo TodoData = {field}></TodoInfo>
-                    if(isSelected=="Done" && field.date<currDate)
-                    return <TodoInfo TodoData = {field}></TodoInfo>
-                }
-                )}
-            </ScrollView>
-
+          <SafeAreaView style= {{alignContent:'center', width:"80%", padding:10, height:500}}>
+          {TodoList.length==0?<Text>No Tasks left, Well Done !</Text>:
+                <FlatList
+                  data={TodoList}
+                  renderItem={renderItem}
+                  keyExtractor={item => item._id}
+                />}
+              </SafeAreaView>
 
         <TouchableOpacity style = {styles.AddUserButton} onPress = {() => navigation.navigate('AddTodo')}>
         <Image source={require('/home/tushar/Desktop/TodoApp/src/static/icons8-add-40.png')} />
@@ -115,6 +144,6 @@ export default function TodoPage({navigation}) {
         
     </View>
 
-    </View>
+    </SafeAreaView>
   )
 }
