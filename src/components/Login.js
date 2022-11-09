@@ -21,6 +21,8 @@
 import { postUserLogin } from '../api/Login';
 import { styles } from '../css/styles';
 import { Keyboard } from 'react-native';
+import Realm from 'realm';
+import UserDetailsSchema from '../schema/UserDetailsSchema';
 
  const Login= ({navigation}) => {
  
@@ -28,7 +30,59 @@ import { Keyboard } from 'react-native';
     const [password, setPassword] = useState("");
     const [loginMessage, setLoginMessage] = useState("");
 
-    const checkAuthorizedUserAndNavigate = async() => {
+    // maintining session if user details already in database;
+    useEffect(() => {
+        const renderUser = async() => {
+
+        const realm1 = await Realm.open({
+          path: "myrealm1",
+          schema: [UserDetailsSchema],
+        });
+
+        userList = realm1.objects("userDetailsNew");
+        
+        console.log("found userList :" , userList);
+          if(userList.length > 0){
+            checkAuthorizedUserAndNavigate(userList[0].email, userList[0].password, false);
+          }else{
+            console.log("New User");
+          }
+        }
+          
+        renderUser();
+        
+      }, []);
+
+    const storeUserDetails = async() => {
+        const realm1 = await Realm.open({
+          path: "myrealm1",
+          schema: [UserDetailsSchema],
+        });
+
+        const incrementID =()=> {
+          userList = realm1.objects("userDetailsNew");
+          if(userList.length>0)
+            return (userList.max("_id") ) + 1;
+          else
+            return 1;
+        }
+
+        obj = {
+          _id:incrementID(),
+          email : email,
+          password : password,
+        }
+
+        realm1.write(() => {
+          let userDetails = realm1.create("userDetailsNew", obj);
+          console.log(`created user: ${userDetails}`);
+          });
+
+          
+      };
+      
+
+    const checkAuthorizedUserAndNavigate = async(email, password, isNewUser) => {
       console.log("checking if authorized user");
       const userData = {
         username:email,
@@ -41,6 +95,7 @@ import { Keyboard } from 'react-native';
 
       if(response.status == 200){
         console.log("Logged In");
+        if(isNewUser)storeUserDetails();
         navigation.navigate('TodoPage');
       }else{
         console.log("Invalid Credentials");
@@ -94,7 +149,7 @@ import { Keyboard } from 'react-native';
            {loginMessage.length>0?<Text style = {styles.redAlert}>{loginMessage}</Text>:<></>}
 
            <TouchableOpacity style={styles.loginButton} onPress = {
-            ()=>checkAuthorizedUserAndNavigate()
+            ()=>checkAuthorizedUserAndNavigate(email, password, true)
             }>  
              <Text style = {{color:'white'}}>LOGIN</Text>
            </TouchableOpacity>

@@ -95,9 +95,6 @@ export default function TodoPage({navigation}) {
 
             <ScrollView style= {{alignContent:'center', width:"80%", padding:10}}>
                 {TodoList.map((field) => {
-                    let today = new Date();
-                    let currDate =  parseInt(today. getMonth() + 1)+'/' +today. getDate() + '/' +today. getFullYear();
-                    console.log("todays date",currDate);
                     if(isSelected=="ToDo")
                     return <TodoInfo TodoData = {field}></TodoInfo>
                     if(isSelected=="Doing" && field.date>=currDate)

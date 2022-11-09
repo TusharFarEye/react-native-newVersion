@@ -68,7 +68,6 @@ export default function AddTodo({navigation}) {
             todoType: todoType
         }
     
-        
         realm.write(() => {
         let todoField = realm.create("todo", obj);
         console.log(`created todo: ${todoField}`);
